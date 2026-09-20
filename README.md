@@ -1,28 +1,51 @@
+<div align="center">
+
 # WordPress MCP Abilities
 
-A security-focused WordPress plugin that exposes explicit **WordPress Abilities** to AI agents through the official [WordPress MCP Adapter](https://github.com/WordPress/mcp-adapter).
+**Safe, explicit WordPress actions for AI agents over MCP.**
 
-The design rule is simple: **agents get narrow, auditable capabilities — never arbitrary execution**.
+[![WordPress](https://img.shields.io/badge/WordPress-6.9%2B-21759B?style=flat-square&logo=wordpress&logoColor=white)](https://wordpress.org/)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=flat-square&logo=php&logoColor=white)](https://www.php.net/)
+[![CI](https://img.shields.io/github/actions/workflow/status/ToniLopezPhoto/wordpress_mcp_abilities/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ToniLopezPhoto/wordpress_mcp_abilities/actions)
+[![License](https://img.shields.io/badge/License-GPL--2.0--or--later-success?style=flat-square)](LICENSE)
 
-**Catálogo de Abilities (285)** · 477 test cases · 48 security tests
+**Catálogo de Abilities (285)** · **477 test cases** · **48 security tests**
 
-## Scope
+</div>
 
-The plugin exposes bounded operations for content, media, taxonomies, comments, users, navigation, Site Editor, plugins, themes, settings, custom post types, multisite administration, integrations and capability-filtered discovery.
+---
 
-It intentionally does **not** expose arbitrary PHP, SQL, shell execution, generic filesystem access or generic WordPress option read/write.
+## How it works
 
-## Security model
+```mermaid
+flowchart LR
+    A[AI Agent] --> B[MCP Adapter]
+    B --> C[Ability Registry]
+    C --> D[Permissions]
+    C --> E[Audit]
+    C --> F[WordPress]
+```
 
-Every ability has its own schema, permission callback and WordPress capability checks. The project favors least privilege, closed schemas, explicit allowlists, ownership enforcement, SSRF-aware URL validation, bounded discovery and clearly identified destructive operations.
+Every action is explicit, schema-bounded and checked against native WordPress capabilities.
 
-## Requirements
+## Surface
 
-- WordPress 6.9+
-- PHP 7.4+
-- [WordPress MCP Adapter](https://github.com/WordPress/mcp-adapter)
+`content` · `media` · `taxonomies` · `comments` · `users` · `navigation` · `site editor` · `plugins` · `themes` · `settings` · `multisite` · `integrations` · `discovery`
 
-## Development
+### Security by design
+
+- Least privilege & ownership checks
+- Closed input/output schemas
+- Explicit allowlists
+- SSRF-aware remote URL validation
+- Bounded discovery and pagination
+- Auditable destructive operations
+
+> No arbitrary PHP, SQL, shell, filesystem access or generic WordPress option read/write.
+
+## Use it
+
+Requires **WordPress 6.9+**, **PHP 7.4+** and the official [WordPress MCP Adapter](https://github.com/WordPress/mcp-adapter).
 
 ```bash
 composer install
@@ -31,23 +54,10 @@ composer stan
 vendor/bin/phpcs
 ```
 
-The suite includes unit tests, multisite coverage, static analysis and real MCP Adapter JSON-RPC E2E tests.
+For the full ability reference, schemas and security notes, see [`wordpress-mcp-abilities/README.md`](wordpress-mcp-abilities/README.md).
 
-## Repository layout
+---
 
-```text
-wordpress-mcp-abilities/   WordPress plugin source
-  includes/                Ability implementations and security boundaries
-  tests/                   Unit, security, multisite and E2E tests
-bin/                       WordPress test-environment tooling
-docs/                      Coverage and test documentation
-.github/workflows/         CI and release automation
-```
+<sub>Reusable plugin code only — keep production URLs, credentials, user data and deployment-specific configuration out of the repository.</sub>
 
-## Production separation
-
-This repository contains reusable plugin code only. Do not commit production URLs, credentials, Application Passwords, user data, database dumps, private infrastructure details or deployment-specific configuration.
-
-## License
-
-GPL-2.0-or-later.
+**GPL-2.0-or-later**
