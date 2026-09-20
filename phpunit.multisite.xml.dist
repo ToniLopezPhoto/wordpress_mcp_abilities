@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+	Multisite configuration for the issue #13 network domain.
+
+	`WP_TESTS_MULTISITE` is the constant the WordPress PHPUnit bootstrap
+	reads to install a network instead of a single site, so it must be set
+	here (PHPUnit applies <php> before it loads the bootstrap) rather than
+	from inside the suite.
+
+	The suite is deliberately scoped to tests/test-network.php. The rest of
+	the suite describes single-site behaviour — role capabilities,
+	unfiltered_html, user deletion — which WordPress itself defines
+	differently on a network; running it here would report environment
+	differences as regressions. The single-site half of issue #13's
+	acceptance criterion (network abilities registered, never offered, and
+	answering wp_mcp_network_unsupported) lives in tests/test-abilities.php
+	and is covered by the ordinary phpunit.xml.dist run.
+-->
+<phpunit
+	bootstrap="wordpress-mcp-abilities/tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+>
+	<php>
+		<const name="WP_TESTS_MULTISITE" value="1"/>
+	</php>
+	<testsuites>
+		<testsuite name="wordpress-mcp-abilities-multisite">
+			<file>wordpress-mcp-abilities/tests/test-network.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>

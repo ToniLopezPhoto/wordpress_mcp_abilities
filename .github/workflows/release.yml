@@ -1,0 +1,34 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify tag matches the plugin header Version
+        run: |
+          set -e
+          TAG="${GITHUB_REF_NAME#v}"
+          HEADER_VERSION="$(grep -oP '(?<=\* Version:)\s*\K[0-9]+\.[0-9]+\.[0-9]+' wordpress-mcp-abilities/wordpress-mcp-abilities.php)"
+          if [ "$TAG" != "$HEADER_VERSION" ]; then
+            echo "::error::Tag v$TAG does not match plugin header Version: $HEADER_VERSION"
+            exit 1
+          fi
+          echo "VERSION=$TAG" >> "$GITHUB_ENV"
+
+      - name: Build reproducible zip via git archive
+        run: |
+          git archive --format=zip --prefix=wordpress-mcp-abilities/ \
+            -o "wordpress-mcp-abilities-${VERSION}.zip" \
+            "${GITHUB_SHA}:wordpress-mcp-abilities"
+
+      - name: Attach zip to the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: wordpress-mcp-abilities-${{ env.VERSION }}.zip

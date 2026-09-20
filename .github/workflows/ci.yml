@@ -1,0 +1,236 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned to a release tag, not `main` — an upstream breakage in
+  # mcp-adapter must not turn this repo's CI red. Bump deliberately.
+  MCP_ADAPTER_REF: v0.6.1
+
+jobs:
+  static:
+    name: Static analysis (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: php -l (all PHP files, including tests/)
+        run: composer run lint
+
+      - name: phpcs
+        run: composer run phpcs
+
+      - name: phpstan
+        if: matrix.php == '8.3'
+        run: composer run stan
+
+  unit:
+    name: Unit tests (PHP ${{ matrix.php }}, WP ${{ matrix.wp }})
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.wp == 'latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.3']
+        wp: ['6.9', 'latest']
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'no'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      WP_TESTS_DIR: /tmp/wordpress-tests-lib
+      WP_CORE_DIR: /tmp/wordpress
+      WP_TESTS_PHPUNIT_POLYFILLS_PATH: ${{ github.workspace }}/vendor/yoast/phpunit-polyfills
+      MCP_ADAPTER_DIR: ${{ github.workspace }}/mcp-adapter
+      WP_MCP_REQUIRE_ABILITIES_API: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout WordPress/mcp-adapter
+        uses: actions/checkout@v4
+        with:
+          repository: WordPress/mcp-adapter
+          ref: ${{ env.MCP_ADAPTER_REF }}
+          path: mcp-adapter
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: Install WP test suite
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wp }}
+
+      - name: phpunit
+        run: composer run test
+
+  unit-multisite:
+    # Issue #13's network domain can only be exercised against a real
+    # WordPress network, which the test framework builds when
+    # WP_TESTS_MULTISITE is defined (see phpunit.multisite.xml.dist). One
+    # PHP x WP leg is enough: this suite tests this plugin's multisite
+    # branches, not PHP compatibility, which the `static` and `unit` jobs
+    # already cover across the full matrix.
+    name: Multisite tests (PHP 8.3, WP 6.9)
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'no'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      WP_TESTS_DIR: /tmp/wordpress-tests-lib
+      WP_CORE_DIR: /tmp/wordpress
+      WP_TESTS_PHPUNIT_POLYFILLS_PATH: ${{ github.workspace }}/vendor/yoast/phpunit-polyfills
+      MCP_ADAPTER_DIR: ${{ github.workspace }}/mcp-adapter
+      WP_MCP_REQUIRE_ABILITIES_API: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout WordPress/mcp-adapter
+        uses: actions/checkout@v4
+        with:
+          repository: WordPress/mcp-adapter
+          ref: ${{ env.MCP_ADAPTER_REF }}
+          path: mcp-adapter
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: Install WP test suite
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.9
+
+      - name: phpunit (multisite)
+        run: composer run test:multisite
+
+  e2e-adapter:
+    # Issue #15's MCP end-to-end suite (tests/e2e-mcp-adapter.php): real
+    # JSON-RPC requests through the pinned mcp-adapter's default server
+    # route. Unlike `unit`, this job installs the adapter's own runtime
+    # dependencies: its release tags ship no vendor/, and mcp-adapter.php
+    # returns early when vendor/autoload_packages.php is missing, so a bare
+    # checkout never boots the adapter. WP_MCP_REQUIRE_MCP_ADAPTER turns a
+    # missing adapter into a hard bootstrap failure instead of a skipped
+    # suite. One PHP x WP leg is enough, as for `unit-multisite`.
+    name: MCP Adapter E2E (PHP 8.3, WP 6.9)
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'no'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      WP_TESTS_DIR: /tmp/wordpress-tests-lib
+      WP_CORE_DIR: /tmp/wordpress
+      WP_TESTS_PHPUNIT_POLYFILLS_PATH: ${{ github.workspace }}/vendor/yoast/phpunit-polyfills
+      MCP_ADAPTER_DIR: ${{ github.workspace }}/mcp-adapter
+      WP_MCP_REQUIRE_ABILITIES_API: '1'
+      WP_MCP_REQUIRE_MCP_ADAPTER: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout WordPress/mcp-adapter
+        uses: actions/checkout@v4
+        with:
+          repository: WordPress/mcp-adapter
+          ref: ${{ env.MCP_ADAPTER_REF }}
+          path: mcp-adapter
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: Install mcp-adapter runtime dependencies (from its composer.lock)
+        run: composer install --no-dev --no-interaction --no-progress --prefer-dist --working-dir=mcp-adapter
+
+      - name: Install WP test suite
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.9
+
+      - name: phpunit (MCP Adapter E2E)
+        run: composer run test:e2e
+
+  docs:
+    name: Documentation drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: Run documentation-drift checks
+        run: vendor/bin/phpunit --configuration phpunit.docs.xml.dist

@@ -1,0 +1,27 @@
+/vendor/
+/node_modules/
+/.codegraph/
+/phpunit.xml
+/wordpress-mcp-abilities/phpunit.xml
+/.phpunit.result.cache
+/wordpress-mcp-abilities/.phpunit.result.cache
+/build/
+*.log
+composer.lock
+
+# Local configuration / credentials.
+.env
+.env.*
+!.env.example
+credentials.json
+auth.json
+*.pem
+*.key
+
+# Local editor/agent state.
+.claude/settings.local.json
+.vscode/settings.json
+
+# Generated release packages — never commit built archives.
+/wordpress-mcp-abilities.zip
+/wordpress-mcp-abilities-*.zip

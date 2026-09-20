@@ -1,0 +1,37 @@
+{
+	"name": "tonilopezphoto/wordpress-mcp-abilities",
+	"description": "WordPress Abilities for AI agent content management via the MCP Adapter.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"squizlabs/php_codesniffer": "^3.13",
+		"wp-coding-standards/wpcs": "^3.2",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"phpunit/phpunit": "^9.6",
+		"yoast/phpunit-polyfills": "^2.0",
+		"phpstan/phpstan": "^1.12",
+		"szepeviktor/phpstan-wordpress": "^1.3",
+		"php-stubs/wordpress-stubs": "^6.9"
+	},
+	"config": {
+		"platform": {
+			"php": "7.4.33"
+		},
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "find wordpress-mcp-abilities -name '*.php' -print0 | xargs -0 -n1 php -l",
+		"phpcs": "phpcs",
+		"stan": "phpstan analyse",
+		"test": "phpunit --configuration phpunit.xml.dist",
+		"test:multisite": "phpunit --configuration phpunit.multisite.xml.dist",
+		"test:e2e": "phpunit --configuration phpunit.e2e.xml.dist"
+	}
+}

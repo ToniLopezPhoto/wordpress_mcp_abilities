@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<phpunit colors="true">
+	<testsuites>
+		<testsuite name="docs">
+			<file>wordpress-mcp-abilities/tests/test-documentation.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>

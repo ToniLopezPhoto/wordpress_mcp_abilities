@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+	MCP Adapter end-to-end configuration (issue #15).
+
+	Runs only tests/e2e-mcp-adapter.php, which drives the real
+	WordPress/mcp-adapter default server over its REST route. It needs
+	MCP_ADAPTER_DIR pointing at a checkout whose Composer runtime
+	dependencies are installed inside it (see the CI `e2e-adapter` job,
+	which also sets WP_MCP_REQUIRE_MCP_ADAPTER=1, so the bootstrap fails
+	hard when the adapter did not boot).
+
+	The file is deliberately not named test-*.php, so the ordinary
+	phpunit.xml.dist directory scan never picks it up in jobs where the
+	adapter is not booted.
+-->
+<phpunit
+	bootstrap="wordpress-mcp-abilities/tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+>
+	<testsuites>
+		<testsuite name="wordpress-mcp-abilities-mcp-e2e">
+			<file>wordpress-mcp-abilities/tests/e2e-mcp-adapter.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="wordpress-mcp-abilities/tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+>
+	<testsuites>
+		<testsuite name="wordpress-mcp-abilities">
+			<directory prefix="test-" suffix=".php">./wordpress-mcp-abilities/tests/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

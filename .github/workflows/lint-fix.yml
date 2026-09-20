@@ -1,0 +1,44 @@
+name: Lint fix
+
+# Manual utility: auto-fix everything PHPCS can fix (phpcbf) and push the
+# result back to the branch that triggered it. Useful on any branch/PR when
+# there's no local PHP available to run `vendor/bin/phpcbf` directly.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  phpcbf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: Run phpcbf (auto-fix what's fixable; non-zero exit is expected)
+        run: vendor/bin/phpcbf || true
+
+      - name: Commit and push fixes, if any
+        run: |
+          set -e
+          if git diff --quiet; then
+            echo "Nothing to fix."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A -- wordpress-mcp-abilities
+          git commit -m "chore: phpcbf auto-fix"
+          git push origin HEAD:${{ github.ref_name }}

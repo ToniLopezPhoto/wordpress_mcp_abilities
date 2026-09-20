@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress MCP Abilities">
+	<description>Coding standards for the WordPress MCP Abilities plugin.</description>
+
+	<file>wordpress-mcp-abilities</file>
+	<exclude-pattern>*/wordpress-mcp-abilities/tests/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+
+	<config name="minimum_supported_wp_version" value="6.9"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.Files.FileName"/>
+
+		<!--
+		This codebase consistently writes single-line constructs — a
+		wp_register_ability() call with its whole array literal and any
+		permission_callback closure on one line, a one-line method body
+		like `{ return current_user_can( 'read' ); }` — across every
+		domain file, from the very first issue. It predates CI entirely
+		and was never validated against these layout sniffs, which all
+		assume multi-line formatting for arrays, function calls, control
+		structures, and function/method bodies. Excluded as a deliberate
+		style choice rather than reformatted wholesale; everything else
+		(correctness, i18n, naming, discouraged/deprecated functions) stays
+		enforced. Re-litigate in a dedicated reformatting pass, not here.
+		-->
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned"/>
+		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound"/>
+		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine"/>
+		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/>
+		<exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/>
+		<exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/>
+		<exclude name="Squiz.Functions.MultiLineFunctionDeclaration.ContentAfterBrace"/>
+		<exclude name="Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace"/>
+		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/>
+		<exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
+
+		<!--
+		Every ability's execute_callback is invoked as $callback( $input )
+		by the Abilities API regardless of whether that ability declares
+		any input properties (see WP_MCP_Ability_Schema::empty_schema()
+		users like get-theme-context, list-widget-areas, list-categories).
+		$input is required by that calling convention even when the method
+		body never consults it — not a real unused-parameter bug. A
+		genuinely dead trailing parameter (unrelated to this convention)
+		still trips Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed,
+		which stays enforced.
+		-->
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found"/>
+	</rule>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array" value="wordpress-mcp-abilities"/>
+		</properties>
+	</rule>
+	<rule ref="PHPCompatibilityWP"/>
+</ruleset>
