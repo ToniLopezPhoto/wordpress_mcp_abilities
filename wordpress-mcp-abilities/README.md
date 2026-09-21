@@ -259,12 +259,9 @@ Source of truth: `WP_MCP_Ability_Matrix::get()`. "Capability" is a
 general WordPress capability checked in the ability's
 `permission_callback`; "Meta-Capability" is a per-object capability
 (resolved by WordPress core's `map_meta_cap`) checked inside the
-callback against the specific object being touched. All 162 abilities
-are in the `wp-mcp-content` (38), `wp-mcp-media` (15),
-`wp-mcp-taxonomies` (16), `wp-mcp-comments` (13), `wp-mcp-users`
-(22), `wp-mcp-navigation` (11), `wp-mcp-site-editor` (22),
-`wp-mcp-plugins` (8), `wp-mcp-themes` (7), or `wp-mcp-system` (2)
-category.
+callback against the specific object being touched. Every ability
+belongs to one of the 15 `wp-mcp-*` categories listed, with their
+counts, in section 6.
 
 ### Posts
 
@@ -375,7 +372,7 @@ category.
 
 ## 6. MCP Categories
 
-All 15 categories from the epic #1 roadmap are pre-registered (via
+All 15 categories are pre-registered (via
 `WP_MCP_Ability_Categories`) so future domains can add abilities to
 them without touching category registration. The `wp-mcp-extensibility`
 count below is the documented surface: 2 abilities are always registered and
@@ -390,10 +387,10 @@ the other 15 only when their third-party plugin is present.
 | `wp-mcp-users` | Active (22 abilities) |
 | `wp-mcp-navigation` | Active (11 abilities) |
 | `wp-mcp-site-editor` | Active (22 abilities) |
-| `wp-mcp-plugins` | Active (8 abilities) |
-| `wp-mcp-themes` | Active (7 abilities) |
+| `wp-mcp-plugins` | Active (11 abilities) |
+| `wp-mcp-themes` | Active (10 abilities) |
 | `wp-mcp-settings` | Active (18 abilities) |
-| `wp-mcp-system` | Active (23 abilities) |
+| `wp-mcp-system` | Active (25 abilities) |
 | `wp-mcp-privacy` | Active (8 abilities) |
 | `wp-mcp-network` | Active (30 abilities) |
 | `wp-mcp-extensibility` | Active (17 abilities) |
@@ -449,7 +446,9 @@ the other 15 only when their third-party plugin is present.
 ## 8. Installation
 1. Ensure WordPress >= 6.9 and PHP >= 7.4
 2. Install and activate mcp-adapter plugin
-3. Upload `wordpress-mcp-abilities.zip` via Plugins > Add New > Upload
+3. Download `wordpress-mcp-abilities-<version>.zip` (and its `.sha256` file) from the
+   [Releases page](https://github.com/ToniLopezPhoto/wordpress_mcp_abilities/releases),
+   verify the checksum, then upload the zip via Plugins > Add New > Upload
 4. Activate the plugin
 5. The `wp_mcp_agent` role is created automatically on activation
 
@@ -479,17 +478,21 @@ The abilities are discovered via the default server's meta-tools:
 - `mcp-adapter-execute-ability` → execute an ability
 
 ## 12. Configuration for MCP Clients
-Example for Claude Desktop (`claude_desktop_config.json`):
+Example for Claude Desktop (`claude_desktop_config.json`) using the
+[`@automattic/mcp-wordpress-remote`](https://www.npmjs.com/package/@automattic/mcp-wordpress-remote)
+proxy, which bridges a local MCP client to the adapter endpoint. Any MCP client
+that can send HTTP Basic credentials to the endpoint works as well; check the
+client's own documentation for its configuration format.
 ```json
 {
   "mcpServers": {
     "wordpress": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-proxy@latest"],
+      "args": ["-y", "@automattic/mcp-wordpress-remote"],
       "env": {
-        "MCP_ENDPOINT": "https://your-site.com/wp-json/mcp/mcp-adapter-default-server",
-        "MCP_USERNAME": "wp-mcp-agent",
-        "MCP_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
+        "WP_API_URL": "https://your-site.com/wp-json/mcp/mcp-adapter-default-server",
+        "WP_API_USERNAME": "wp-mcp-agent",
+        "WP_API_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
       }
     }
   }
