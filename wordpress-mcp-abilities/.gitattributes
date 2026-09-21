@@ -3,8 +3,8 @@
 
 # `git archive --prefix=wordpress-mcp-abilities/ HEAD:wordpress-mcp-abilities`
 # packages only this subtree, so this is the only .gitattributes that governs
-# the installable zip (see CLAUDE.md "Packaging"). Repo-root dev/CI tooling
-# (bin/, docs/, .github/, .claude/, composer.json, phpcs.xml, ...) already
-# lives outside this subtree and is never part of the archive.
+# the installable zip (see docs/RELEASING.md). Repo-root dev/CI tooling
+# (bin/, docs/, .github/, composer.json, phpcs.xml, ...) already lives
+# outside this subtree and is never part of the archive.
 /tests export-ignore
 /.gitattributes export-ignore

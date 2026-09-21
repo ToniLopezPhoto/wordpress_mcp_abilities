@@ -173,7 +173,7 @@ verifies that every `wp-mcp/*` name in this report is a real matrix entry
 | --- | --- | --- |
 | Plugin and theme file editors (`plugin-editor.php`, `theme-editor.php`) | Generic filesystem write and arbitrary PHP: EPIC #1 prohibitions | `test-abilities.php` forbidden-primitive name sweep; `test-security.php` `FORBIDDEN_INPUT_PROPERTIES` sweep |
 | `options.php` and any raw option read/write | Generic option access: EPIC #1 prohibition | `test-abilities.php` "no `option` in any ability name" sweep; `test-security.php` settings-allowlist tests |
-| Settings holding secrets, site URLs, filesystem paths or `admin_email` (`mailserver_pass`, `siteurl`, `home`, `upload_path`, `admin_email`) | Security invariant in `CLAUDE.md`; `admin_email` needs an e-mail confirmation flow that has no MCP equivalent | `WP_MCP_Settings::never_writable_options()`; `test-security.php` settings tests |
+| Settings holding secrets, site URLs, filesystem paths or `admin_email` (`mailserver_pass`, `siteurl`, `home`, `upload_path`, `admin_email`) | Project security invariant (see `CONTRIBUTING.md`); `admin_email` needs an e-mail confirmation flow that has no MCP equivalent | `WP_MCP_Settings::never_writable_options()`; `test-security.php` settings tests |
 | Free-form custom fields (unregistered, `_`-prefixed or protected post meta) | Only registered, `show_in_rest`, `single`, unprotected keys are exposed | `test-security.php` protected/unregistered post meta tests |
 | Customizer (`customize.php`) | No ability exists; the Site Editor covers block themes | Absence from the matrix (the category counts above) |
 | Classic widget editing (`widgets.php`) | Only `wp-mcp/list-widget-areas` (read) exists | The `wp-mcp-site-editor` count above |

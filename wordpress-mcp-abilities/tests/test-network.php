@@ -9,7 +9,7 @@
  * registered, never offered, answering `wp_mcp_network_unsupported` — is
  * covered in tests/test-abilities.php instead.
  *
- * @package Apfimur_Agent_Abilities
+ * @package WP_MCP_Agent_Abilities
  */
 
 class WP_MCP_Test_Network extends WP_UnitTestCase {
