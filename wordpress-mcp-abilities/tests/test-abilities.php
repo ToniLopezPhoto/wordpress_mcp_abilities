@@ -2,7 +2,7 @@
 /**
  * Test WordPress MCP Abilities.
  *
- * @package Apfimur_Agent_Abilities
+ * @package WP_MCP_Agent_Abilities
  */
 
 class WP_MCP_Test_Abilities extends WP_UnitTestCase {
@@ -6086,12 +6086,12 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	public function test_flush_object_cache_reports_the_backend() {
 		$this->become_issue_12_admin();
 
-		wp_cache_set( 'wp_mcp_probe', 'value', 'apfimur' );
+		wp_cache_set( 'wp_mcp_probe', 'value', 'acmeinc' );
 		$result = WP_MCP_Maintenance::flush_object_cache();
 		$this->assertNotWPError( $result );
 		$this->assertTrue( $result['flushed'] );
 		$this->assertIsBool( $result['external_object_cache'] );
-		$this->assertFalse( wp_cache_get( 'wp_mcp_probe', 'apfimur' ) );
+		$this->assertFalse( wp_cache_get( 'wp_mcp_probe', 'acmeinc' ) );
 	}
 
 	public function test_clear_update_caches_only_touches_the_three_update_transients() {
@@ -6507,7 +6507,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 						return array(
 							'data' => array(
 								array(
-									'group_id'    => 'apfimur',
+									'group_id'    => 'acmeinc',
 									'group_label' => 'WordPress MCP',
 									'item_id'     => 'wp-mcp-' . (int) $page,
 									'data'        => array( array( 'name' => 'Probe', 'value' => 'value-' . (int) $page ) ),
@@ -7648,7 +7648,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 				'title'            => 'WordPress MCP Discovery Block',
 				'category'         => 'text',
 				'description'      => 'Fixture block for the issue #16 discovery tests.',
-				'keywords'         => array( 'apfimur', 'discovery' ),
+				'keywords'         => array( 'acmeinc', 'discovery' ),
 				'parent'           => array( 'core/group' ),
 				'attributes'       => array(
 					'align'   => array( 'type' => 'string', 'default' => 'left', 'enum' => array( 'left', 'right' ) ),
@@ -7692,7 +7692,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 				'discovery',
 				'/var/www/secret/wp-config-backup.php',
 				'https://evil.example/hook?token=abc123',
-				array( 'nested' => 'apfimurPluginConfig' ),
+				array( 'nested' => 'acmeincPluginConfig' ),
 				static function () {
 					return 'wp-mcp-closure-marker';
 				},
@@ -7702,7 +7702,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 			'ancestor' => array( new stdClass(), '../../wp-config.php' ),
 			'uses_context'     => array(
 				'postId',
-				'apfimurSecretApiKey',
+				'acmeincSecretApiKey',
 				'/var/www/secret/wp-config-backup.php',
 				42,
 				static function () {
@@ -7711,22 +7711,22 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 			),
 			'provides_context' => array(
 				'postId'                               => 'ref',
-				'apfimurSecretApiKey'                  => 'sk-live-WordPress MCPSECRET',
+				'acmeincSecretApiKey'                  => 'sk-live-WordPress MCPSECRET',
 				'wp-mcp/config'                       => 'hunter2',
 				'/var/www/secret/wp-config-backup.php' => '/srv/app/private',
 			),
 			'attributes'       => array(
 				'ref'                   => array( 'type' => array( 'number', 'null', '/etc/passwd' ) ),
-				'apfimurSecretSetting'  => array(
+				'acmeincSecretSetting'  => array(
 					'type'    => 'string',
 					'default' => 'sk-live-WordPress MCPSECRET',
 					'enum'    => array( 'sk-live-WordPress MCPSECRET', '/srv/app/private' ),
 				),
-				'apfimurCallbackTyped'  => array(
+				'acmeincCallbackTyped'  => array(
 					'type'   => static function () {
 						return 'wp-mcp-closure-marker';
 					},
-					'source' => 'apfimurCustomSource',
+					'source' => 'acmeincCustomSource',
 				),
 				'/etc/passwd'           => array( 'type' => 'string' ),
 				'https://evil.example'  => array( 'type' => 'string' ),
@@ -7738,8 +7738,8 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 				'color'    => array(
 					'text'            => true,
 					'gradients'       => false,
-					'apfimurWebhook'  => 'https://evil.example/hook?token=abc123',
-					'apfimurPassword' => 'hunter2',
+					'acmeincWebhook'  => 'https://evil.example/hook?token=abc123',
+					'acmeincPassword' => 'hunter2',
 				),
 				// A closure parked under an allowlisted key: never inspected.
 				'position' => static function () {
@@ -7748,12 +7748,12 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 				// A secret one level deeper, under an allowlisted sub-feature:
 				// the sub-feature name is reported, its contents are not walked.
 				'typography' => array(
-					'fontSize' => array( 'apfimurToken' => 'sk-live-WordPress MCPSECRET' ),
+					'fontSize' => array( 'acmeincToken' => 'sk-live-WordPress MCPSECRET' ),
 				),
 				// Invented keys: dropped whole, name and value alike.
-				'apfimurSecretApiKey'  => 'sk-live-WordPress MCPSECRET',
-				'apfimurRenderHandler' => '__return_empty_string',
-				'apfimurPluginConfig'  => array(
+				'acmeincSecretApiKey'  => 'sk-live-WordPress MCPSECRET',
+				'acmeincRenderHandler' => '__return_empty_string',
+				'acmeincPluginConfig'  => array(
 					'db_password' => 'hunter2',
 					'path'        => '/srv/app/private',
 					'endpoint'    => 'https://evil.example/api',
@@ -7775,7 +7775,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 			'public' => false,
 		) );
 		// 84 characters: a name that survives sanitize_key() but not the grammar.
-		register_post_status( str_repeat( 'apfimur', 12 ), array( 'label' => 'https://evil.example/hook?token=abc123' ) );
+		register_post_status( str_repeat( 'acmeinc', 12 ), array( 'label' => 'https://evil.example/hook?token=abc123' ) );
 
 		if ( function_exists( 'register_block_pattern_category' ) ) {
 			// Valid name, hostile free text: the name is reported, the rest is not.
@@ -7796,7 +7796,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	 * Undo the registry fixtures.
 	 */
 	private function unregister_issue_16_hostile_registries() {
-		foreach ( array( 'wp_mcp_hostile_status', str_repeat( 'apfimur', 12 ) ) as $status ) {
+		foreach ( array( 'wp_mcp_hostile_status', str_repeat( 'acmeinc', 12 ) ) as $status ) {
 			if ( isset( $GLOBALS['wp_post_statuses'][ $status ] ) ) {
 				unset( $GLOBALS['wp_post_statuses'][ $status ] );
 			}
@@ -7820,9 +7820,9 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	 * @return array
 	 */
 	public function issue_16_hostile_mimes( $mimes ) {
-		$mimes['apfimurevil']          = 'https://evil.example/hook?token=abc123';
-		$mimes['jpg|apfimur secret']   = 'image/wp-mcp-hostile';
-		$mimes['apfimurpath']          = '/var/www/secret/wp-config-backup.php';
+		$mimes['acmeincevil']          = 'https://evil.example/hook?token=abc123';
+		$mimes['jpg|acmeinc secret']   = 'image/wp-mcp-hostile';
+		$mimes['acmeincpath']          = '/var/www/secret/wp-config-backup.php';
 		return $mimes;
 	}
 
@@ -8153,11 +8153,11 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 			'/srv/app/private',
 			'__return_empty_string',
 			'wp-mcp-closure-marker',
-			'apfimurSecretApiKey',
-			'apfimurRenderHandler',
-			'apfimurPluginConfig',
-			'apfimurWebhook',
-			'apfimurPassword',
+			'acmeincSecretApiKey',
+			'acmeincRenderHandler',
+			'acmeincPluginConfig',
+			'acmeincWebhook',
+			'acmeincPassword',
 			'db_password',
 		) as $needle ) {
 			$this->assertStringNotContainsString( $needle, $encoded, 'A block support registration value or unlisted key leaked: ' . $needle );
@@ -8191,7 +8191,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		// Normalisation does not recurse: an allowlisted sub-feature is a name,
 		// and whatever is nested under it stays where it is.
 		$this->assertEquals( array( 'fontSize' ), $supports['typography']['sub_features'] );
-		$this->assertStringNotContainsString( 'apfimurToken', $encoded );
+		$this->assertStringNotContainsString( 'acmeincToken', $encoded );
 
 		// The invented keys are gone entirely, name included.
 		foreach ( $result['supports_keys'] as $key ) {
@@ -8218,7 +8218,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 
 		$encoded = wp_json_encode( $result );
 		foreach ( array(
-			'apfimurSecretApiKey',
+			'acmeincSecretApiKey',
 			'wp-mcp/config',
 			'hunter2',
 			'sk-live-WordPress MCPSECRET',
@@ -8228,9 +8228,9 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 			'/etc/passwd',
 			'evil.example',
 			'token=abc123',
-			'apfimurCustomSource',
+			'acmeincCustomSource',
 			'wp-mcp-closure-marker',
-			'apfimurPluginConfig',
+			'acmeincPluginConfig',
 		) as $needle ) {
 			$this->assertStringNotContainsString( $needle, $encoded, 'Block registration data leaked: ' . $needle );
 		}
@@ -8264,12 +8264,12 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		// A declared type array keeps its allowlisted members and drops the rest.
 		$this->assertEquals( array( 'number', 'null' ), $attributes['ref']['types'] );
 		// A secret default and a secret enumeration become booleans.
-		$this->assertTrue( $attributes['apfimurSecretSetting']['has_default'] );
-		$this->assertTrue( $attributes['apfimurSecretSetting']['has_enum'] );
-		$this->assertArrayNotHasKey( 'enum', $attributes['apfimurSecretSetting'] );
+		$this->assertTrue( $attributes['acmeincSecretSetting']['has_default'] );
+		$this->assertTrue( $attributes['acmeincSecretSetting']['has_enum'] );
+		$this->assertArrayNotHasKey( 'enum', $attributes['acmeincSecretSetting'] );
 		// A closure as a type, and an invented source, report nothing at all.
-		$this->assertSame( array(), $attributes['apfimurCallbackTyped']['types'] );
-		$this->assertEquals( '', $attributes['apfimurCallbackTyped']['source'] );
+		$this->assertSame( array(), $attributes['acmeincCallbackTyped']['types'] );
+		$this->assertEquals( '', $attributes['acmeincCallbackTyped']['source'] );
 		$this->assertArrayNotHasKey( '/etc/passwd', $attributes );
 		$this->assertArrayNotHasKey( 'https://evil.example', $attributes );
 	}
@@ -8303,7 +8303,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		 * three identifiers survive and the path and the URL do not.
 		 */
 		$expected = array_merge(
-			array( 'apfimurCallbackTyped', 'apfimurSecretSetting', 'ref' ),
+			array( 'acmeincCallbackTyped', 'acmeincSecretSetting', 'ref' ),
 			array_keys( WP_Block_Type::GLOBAL_ATTRIBUTES )
 		);
 		$this->assertEquals( $this->issue_16_sorted( $expected ), $this->issue_16_sorted( $detail['attribute_names'] ) );
@@ -8314,7 +8314,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->assertNotWPError( $listed );
 
 		$encoded = wp_json_encode( $listed );
-		foreach ( array( '/var/www/secret', 'evil.example', '/etc/passwd', 'wp-mcp-closure-marker', 'apfimurSecretApiKey' ) as $needle ) {
+		foreach ( array( '/var/www/secret', 'evil.example', '/etc/passwd', 'wp-mcp-closure-marker', 'acmeincSecretApiKey' ) as $needle ) {
 			$this->assertStringNotContainsString( $needle, $encoded, 'The list response leaked ' . $needle );
 		}
 
@@ -8353,7 +8353,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->assertNotWPError( $result );
 
 		$encoded = wp_json_encode( $result );
-		$this->assertStringNotContainsString( 'apfimurSecretApiKey', $encoded );
+		$this->assertStringNotContainsString( 'acmeincSecretApiKey', $encoded );
 		$this->assertStringNotContainsString( 'sk-live-WordPress MCPSECRET', $encoded );
 
 		$vocabulary = WP_MCP_Discovery::block_support_vocabulary();
@@ -8596,7 +8596,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 
 	public function test_issue_16_global_search_finds_a_published_post() {
 		self::factory()->post->create( array(
-			'post_title'  => 'Apfimur Discoverable Headline',
+			'post_title'  => 'Acmeinc Discoverable Headline',
 			'post_status' => 'publish',
 			'post_author' => $this->other_user,
 		) );
@@ -8614,7 +8614,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 
 	public function test_issue_16_global_search_returns_the_callers_own_draft() {
 		self::factory()->post->create( array(
-			'post_title'  => 'Apfimur Private Notebook',
+			'post_title'  => 'Acmeinc Private Notebook',
 			'post_status' => 'draft',
 			'post_author' => $this->agent_user,
 		) );
@@ -8631,7 +8631,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 
 	public function test_issue_16_global_search_never_returns_another_users_draft() {
 		self::factory()->post->create( array(
-			'post_title'  => 'Apfimur Somebody Elses Draft',
+			'post_title'  => 'Acmeinc Somebody Elses Draft',
 			'post_status' => 'draft',
 			'post_author' => $this->other_user,
 		) );
@@ -8651,7 +8651,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	 */
 	public function test_issue_16_global_search_never_returns_another_users_private_post() {
 		self::factory()->post->create( array(
-			'post_title'  => 'Apfimur Confidential Memo',
+			'post_title'  => 'Acmeinc Confidential Memo',
 			'post_status' => 'private',
 			'post_author' => $this->other_user,
 		) );
@@ -8674,10 +8674,10 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	}
 
 	public function test_issue_16_global_search_only_searches_users_with_list_users() {
-		$person = self::factory()->user->create( array( 'role' => 'author', 'display_name' => 'ApfimurDiscoverablePerson' ) );
+		$person = self::factory()->user->create( array( 'role' => 'author', 'display_name' => 'AcmeincDiscoverablePerson' ) );
 
 		wp_set_current_user( $this->agent_user );
-		$denied = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurDiscoverablePerson' ) );
+		$denied = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincDiscoverablePerson' ) );
 		$this->assertNotWPError( $denied );
 		$this->assertNotContains( 'user', $denied['searched'], 'A caller without list_users must not search users.' );
 		$this->assertEquals( array( array( 'type' => 'user', 'reason' => 'wp_mcp_permission_denied' ) ), $denied['skipped'] );
@@ -8686,7 +8686,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		}
 
 		$this->become_issue_12_admin();
-		$allowed = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurDiscoverablePerson', 'types' => array( 'user' ) ) );
+		$allowed = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincDiscoverablePerson', 'types' => array( 'user' ) ) );
 		$this->assertNotWPError( $allowed );
 		$this->assertSame( array(), $allowed['skipped'] );
 		$this->assertContains( $person, wp_list_pluck( $allowed['results'], 'id' ) );
@@ -8694,11 +8694,11 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 
 	public function test_issue_16_global_search_never_returns_content_or_an_email_address() {
 		$post_id = self::factory()->post->create( array(
-			'post_title'   => 'Apfimur Leakage Probe',
+			'post_title'   => 'Acmeinc Leakage Probe',
 			'post_content' => 'SECRETBODYTEXT that must never be returned.',
 			'post_status'  => 'publish',
 		) );
-		wp_update_user( array( 'ID' => $this->other_user, 'user_email' => 'leakageprobe@example.org', 'display_name' => 'Apfimur Leakage Probe' ) );
+		wp_update_user( array( 'ID' => $this->other_user, 'user_email' => 'leakageprobe@example.org', 'display_name' => 'Acmeinc Leakage Probe' ) );
 
 		$this->become_issue_12_admin();
 		$result = WP_MCP_Discovery::global_search( array( 'search' => 'Leakage Probe' ) );
@@ -8709,7 +8709,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'leakageprobe@example.org', $encoded, 'A user hit must never carry an e-mail address.' );
 
 		$this->assertContains( $post_id, wp_list_pluck( $result['results'], 'id' ) );
-		$this->assertStringNotContainsString( 'Apfimur Leakage Probe', $encoded, 'A title is content: search reports identity, not titles.' );
+		$this->assertStringNotContainsString( 'Acmeinc Leakage Probe', $encoded, 'A title is content: search reports identity, not titles.' );
 		foreach ( $result['results'] as $row ) {
 			$this->assertEquals(
 				array( 'object_type', 'id', 'subtype', 'status', 'date_gmt', 'editable' ),
@@ -8723,10 +8723,10 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$attachment = self::factory()->attachment->create_object( 'wp-mcp-discovery.jpg', 0, array(
 			'post_mime_type' => 'image/jpeg',
 			'post_type'      => 'attachment',
-			'post_title'     => 'Apfimur Discoverable Picture',
+			'post_title'     => 'Acmeinc Discoverable Picture',
 			'post_status'    => 'inherit',
 		) );
-		$term = self::factory()->term->create( array( 'taxonomy' => 'category', 'name' => 'Apfimur Discoverable Topic' ) );
+		$term = self::factory()->term->create( array( 'taxonomy' => 'category', 'name' => 'Acmeinc Discoverable Topic' ) );
 
 		$this->become_issue_12_admin();
 
@@ -8778,12 +8778,12 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	public function test_issue_16_global_search_reports_capped_when_a_branch_truncates() {
 		self::factory()->post->create_many( 51, array(
 			'post_status' => 'publish',
-			'post_title'  => 'ApfimurCappedProbe',
+			'post_title'  => 'AcmeincCappedProbe',
 			'post_author' => $this->other_user,
 		) );
 
 		wp_set_current_user( $this->agent_user );
-		$result = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurCappedProbe', 'types' => array( 'post' ) ) );
+		$result = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincCappedProbe', 'types' => array( 'post' ) ) );
 
 		$this->assertNotWPError( $result );
 		$this->assertTrue( $result['capped'], 'A branch that hit its row limit must be reported as capped.' );
@@ -8791,7 +8791,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->assertEquals( 5, $result['total_pages'] );
 		$this->assertCount( 10, $result['results'] );
 
-		$last_page = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurCappedProbe', 'types' => array( 'post' ), 'page' => 5 ) );
+		$last_page = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincCappedProbe', 'types' => array( 'post' ), 'page' => 5 ) );
 		$this->assertNotWPError( $last_page );
 		$this->assertTrue( $last_page['capped'], 'The last page must still say the match was truncated.' );
 		$this->assertCount( 10, $last_page['results'] );
@@ -8803,11 +8803,11 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	 */
 	public function test_issue_16_global_search_reports_capped_when_the_term_branch_truncates() {
 		for ( $index = 0; $index < 51; $index++ ) {
-			self::factory()->term->create( array( 'taxonomy' => 'category', 'name' => 'ApfimurCappedTerm ' . $index ) );
+			self::factory()->term->create( array( 'taxonomy' => 'category', 'name' => 'AcmeincCappedTerm ' . $index ) );
 		}
 
 		wp_set_current_user( $this->agent_user );
-		$result = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurCappedTerm', 'types' => array( 'term' ), 'per_page' => 50 ) );
+		$result = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincCappedTerm', 'types' => array( 'term' ), 'per_page' => 50 ) );
 
 		$this->assertNotWPError( $result );
 		$this->assertTrue( $result['capped'] );
@@ -8823,12 +8823,12 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	public function test_issue_16_global_search_is_not_capped_when_the_whole_match_fits() {
 		self::factory()->post->create_many( 3, array(
 			'post_status' => 'publish',
-			'post_title'  => 'ApfimurSmallProbe',
+			'post_title'  => 'AcmeincSmallProbe',
 			'post_author' => $this->other_user,
 		) );
 
 		wp_set_current_user( $this->agent_user );
-		$first = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurSmallProbe', 'types' => array( 'post' ), 'per_page' => 2 ) );
+		$first = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincSmallProbe', 'types' => array( 'post' ), 'per_page' => 2 ) );
 
 		$this->assertNotWPError( $first );
 		$this->assertFalse( $first['capped'], 'A match that fits within the branch limit is not capped.' );
@@ -8836,12 +8836,12 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->assertEquals( 2, $first['total_pages'] );
 		$this->assertCount( 2, $first['results'] );
 
-		$second = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurSmallProbe', 'types' => array( 'post' ), 'per_page' => 2, 'page' => 2 ) );
+		$second = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincSmallProbe', 'types' => array( 'post' ), 'per_page' => 2, 'page' => 2 ) );
 		$this->assertNotWPError( $second );
 		$this->assertFalse( $second['capped'] );
 		$this->assertCount( 1, $second['results'] );
 
-		$beyond = WP_MCP_Discovery::global_search( array( 'search' => 'ApfimurSmallProbe', 'types' => array( 'post' ), 'per_page' => 2, 'page' => 9 ) );
+		$beyond = WP_MCP_Discovery::global_search( array( 'search' => 'AcmeincSmallProbe', 'types' => array( 'post' ), 'per_page' => 2, 'page' => 9 ) );
 		$this->assertNotWPError( $beyond );
 		$this->assertSame( array(), $beyond['results'], 'A page past the end is empty, not an error.' );
 		$this->assertEquals( 3, $beyond['total'] );
@@ -8862,7 +8862,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	 */
 	public function test_issue_16_global_search_skips_the_internal_post_types() {
 		$block_id = self::factory()->post->create( array(
-			'post_title'  => 'Apfimur Internal Marker',
+			'post_title'  => 'Acmeinc Internal Marker',
 			'post_type'   => 'wp_block',
 			'post_status' => 'publish',
 		) );
@@ -8916,15 +8916,15 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 			'token=abc123',
 			'wp-mcp-closure-marker',
 			'__return_empty_string',
-			'apfimurSecretApiKey',
-			'apfimurPluginConfig',
-			'apfimurWebhook',
-			'apfimurCustomSource',
+			'acmeincSecretApiKey',
+			'acmeincPluginConfig',
+			'acmeincWebhook',
+			'acmeincCustomSource',
 			'wp-mcp-hostile-type',
 			'wp-mcp-hostile-area',
 			'WordPress MCP Hostile',
 			'WordPress MCP Discovery Block',
-			'apfimur secret',
+			'acmeinc secret',
 		);
 	}
 
@@ -8935,7 +8935,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 	 */
 	private function issue_16_all_discovery_responses() {
 		return array(
-			'wp-mcp/global-search'                 => WP_MCP_Discovery::global_search( array( 'search' => 'apfimur' ) ),
+			'wp-mcp/global-search'                 => WP_MCP_Discovery::global_search( array( 'search' => 'acmeinc' ) ),
 			'wp-mcp/list-post-statuses'            => WP_MCP_Discovery::list_post_statuses( array() ),
 			'wp-mcp/list-mime-types'               => WP_MCP_Discovery::list_mime_types( array() ),
 			'wp-mcp/list-block-types'              => WP_MCP_Discovery::list_block_types( array( 'per_page' => 50 ) ),
@@ -8997,7 +8997,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->assertNotWPError( $statuses );
 		$names = wp_list_pluck( $statuses['statuses'], 'name' );
 		$this->assertContains( 'wp_mcp_hostile_status', $names, 'A registry slug is exactly what discovery does report.' );
-		$this->assertNotContains( str_repeat( 'apfimur', 12 ), $names, 'A name longer than the grammar allows is dropped.' );
+		$this->assertNotContains( str_repeat( 'acmeinc', 12 ), $names, 'A name longer than the grammar allows is dropped.' );
 
 		$categories = WP_MCP_Discovery::list_pattern_categories( array() );
 		$this->assertNotWPError( $categories );
@@ -9009,7 +9009,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$reported = wp_list_pluck( $mimes['mime_types'], 'mime_type' );
 		$this->assertContains( 'image/wp-mcp-hostile', $reported, 'A well-formed mime type is reported.' );
 		foreach ( $mimes['mime_types'] as $entry ) {
-			$this->assertNotContains( 'apfimur secret', $entry['extensions'], 'An extension that is not one is dropped.' );
+			$this->assertNotContains( 'acmeinc secret', $entry['extensions'], 'An extension that is not one is dropped.' );
 		}
 
 		$templates = WP_MCP_Discovery::list_template_types( array() );
@@ -9267,7 +9267,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->become_issue_12_admin();
 
 		$responses = array(
-			'wp-mcp/global-search'                 => WP_MCP_Discovery::global_search( array( 'search' => 'apfimur' ) ),
+			'wp-mcp/global-search'                 => WP_MCP_Discovery::global_search( array( 'search' => 'acmeinc' ) ),
 			'wp-mcp/list-post-statuses'            => WP_MCP_Discovery::list_post_statuses( array() ),
 			'wp-mcp/list-mime-types'               => WP_MCP_Discovery::list_mime_types( array() ),
 			'wp-mcp/list-block-types'              => WP_MCP_Discovery::list_block_types( array() ),
@@ -9818,7 +9818,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$this->become_issue_12_admin();
 
 		WP_MCP_Counting_Block_Type::$inspections = 0;
-		$listed = WP_MCP_Discovery::list_block_types( array( 'block_namespace' => 'apfimurvoid' ) );
+		$listed = WP_MCP_Discovery::list_block_types( array( 'block_namespace' => 'acmeincvoid' ) );
 
 		$this->assertNotWPError( $listed );
 		$this->assertSame( array(), $listed['block_types'], 'Nothing is registered in that namespace.' );
@@ -9970,7 +9970,7 @@ class WP_MCP_Test_Abilities extends WP_UnitTestCase {
 		$max = WP_MCP_Discovery_Contract::limit( 'max_page' );
 
 		foreach ( array( $max + 1, $max + 1000, PHP_INT_MAX ) as $beyond ) {
-			$search = WP_MCP_Discovery::global_search( array( 'search' => 'apfimur', 'page' => $beyond ) );
+			$search = WP_MCP_Discovery::global_search( array( 'search' => 'acmeinc', 'page' => $beyond ) );
 			$this->assertWPError( $search, 'global-search must refuse a page above its ceiling.' );
 			$this->assertEquals( 'wp_mcp_discovery_validation_error', $search->get_error_code() );
 
@@ -10283,7 +10283,7 @@ if ( class_exists( 'WP_Block_Type' ) && ! class_exists( 'WP_MCP_Counting_Block_T
 	 * itself say when it was looked at. `is_dynamic()` is the one method
 	 * building a summary calls, so it is the counter.
 	 *
-	 * @package Apfimur_Agent_Abilities
+	 * @package WP_MCP_Agent_Abilities
 	 */
 	class WP_MCP_Counting_Block_Type extends WP_Block_Type {
 

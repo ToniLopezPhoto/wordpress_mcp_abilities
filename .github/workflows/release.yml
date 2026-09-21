@@ -8,6 +8,10 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Creating a GitHub Release and uploading assets needs write access; the
+    # default token may be read-only depending on the repository settings.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +32,41 @@ jobs:
             -o "wordpress-mcp-abilities-${VERSION}.zip" \
             "${GITHUB_SHA}:wordpress-mcp-abilities"
 
-      - name: Attach zip to the GitHub Release
+      - name: Verify the zip only contains the installable plugin
+        run: |
+          set -e
+          ZIP="wordpress-mcp-abilities-${VERSION}.zip"
+          LISTING="$(unzip -Z1 "$ZIP")"
+          if echo "$LISTING" | grep -qvE '^wordpress-mcp-abilities/'; then
+            echo "::error::Zip has entries outside wordpress-mcp-abilities/"
+            exit 1
+          fi
+          if echo "$LISTING" | grep -qE '/(tests|\.git[^/]*|\.github|\.claude)(/|$)'; then
+            echo "::error::Zip contains development-only files"
+            exit 1
+          fi
+          echo "$LISTING" | grep -qx 'wordpress-mcp-abilities/wordpress-mcp-abilities.php'
+
+      - name: Write SHA-256 checksum
+        run: sha256sum "wordpress-mcp-abilities-${VERSION}.zip" > "wordpress-mcp-abilities-${VERSION}.zip.sha256"
+
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          set -e
+          awk -v h="## [${VERSION}]" '
+            index($0, h) == 1 { found = 1; next }
+            index($0, "## [") == 1 { found = 0 }
+            found
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "::error::CHANGELOG.md has no section for version ${VERSION}"
+            exit 1
+          fi
+
+      - name: Attach zip and checksum to the GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: wordpress-mcp-abilities-${{ env.VERSION }}.zip
+          body_path: release-notes.md
+          files: |
+            wordpress-mcp-abilities-${{ env.VERSION }}.zip
+            wordpress-mcp-abilities-${{ env.VERSION }}.zip.sha256
